@@ -61,11 +61,9 @@
 
 //   const sunTexture = new THREE.TextureLoader().load('assets/sun.png');
 //   const sunShapeGeometry = new THREE.SphereGeometry(200, 32, 32);
-//   const sunShapeMaterial = new THREE.MeshBasicMaterial({
-//     map: sunTexture,
-//   });
+//   const sunShapeMaterial = new THREE.MeshBasicMaterial({ map: sunTexture });
 //   const sunMesh = new THREE.Mesh(sunShapeGeometry, sunShapeMaterial);
-//   sunMesh.position.set(1300,10,0);
+//   sunMesh.position.set(1300, 10, 0);
 //   scene.add(sunMesh);
 
 //   const ambient = new THREE.AmbientLight(0xffffff, 2); 
@@ -73,7 +71,7 @@
 
 //   // Ship
 //   const shipGeometry = new THREE.ConeGeometry(0.5, 1, 8);
-//   shipGeometry.rotateX(Math.PI); // face -Z
+//   shipGeometry.rotateX(Math.PI);
 //   const shipMaterial = new THREE.MeshStandardMaterial({ color: 0x990033 });
 //   const ship = new THREE.Mesh(shipGeometry, shipMaterial);
 //   ship.position.set(0, 10, 0);
@@ -116,19 +114,52 @@
 //   window.addEventListener('keydown', e => keys[e.code] = true);
 //   window.addEventListener('keyup', e => keys[e.code] = false);
 
-//   // Gamepad support
 //   let gamepadIndex = null;
-//   window.addEventListener('gamepadconnected', (e) => {
-//     console.log('Gamepad connected:', e.gamepad);
-//     gamepadIndex = e.gamepad.index;
-//   });
+//   window.addEventListener('gamepadconnected', e => gamepadIndex = e.gamepad.index);
+
+//   // --- Mobile detection & accelerometer ---
+//   const isMobile = /Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
+//   let accelPressed = false;
+//   let decelPressed = false;
+//   let mobileRotation = { pitch: 0, yaw: 0, roll: 0 };
+
+//   if (isMobile) {
+//     // Buttons
+//     const accelBtn = document.createElement('button');
+//     accelBtn.textContent = 'ACCEL';
+//     Object.assign(accelBtn.style, {
+//       position: 'absolute', bottom: '20px', left: '20px',
+//       fontSize: '18px', padding: '10px'
+//     });
+//     document.body.appendChild(accelBtn);
+//     accelBtn.ontouchstart = () => accelPressed = true;
+//     accelBtn.ontouchend = () => accelPressed = false;
+
+//     const decelBtn = document.createElement('button');
+//     decelBtn.textContent = 'DECEL';
+//     Object.assign(decelBtn.style, {
+//       position: 'absolute', bottom: '20px', right: '20px',
+//       fontSize: '18px', padding: '10px'
+//     });
+//     document.body.appendChild(decelBtn);
+//     decelBtn.ontouchstart = () => decelPressed = true;
+//     decelBtn.ontouchend = () => decelPressed = false;
+
+//     // Accelerometer
+//     if (window.DeviceOrientationEvent) {
+//       window.addEventListener('deviceorientation', (e) => {
+//         mobileRotation.roll = e.gamma || 0;
+//         mobileRotation.pitch = e.beta || 0;
+//         mobileRotation.yaw = e.alpha || 0;
+//       });
+//     }
+//   }
 
 //   // Physics
 //   const velocity = new THREE.Vector3();
 //   const acceleration = 0.006;
 //   const friction = 0.98;
 //   const rotSpeed = 0.01;
-
 //   const explosions = [];
 
 //   function createExplosion(position) {
@@ -147,13 +178,11 @@
 //     explosions.push(explosion);
 //   }
 
-//   // Animate loop
 //   function animate() {
 //     requestAnimationFrame(animate);
-
 //     const q = new THREE.Quaternion();
 
-//     // --- Keyboard fallback controls ---
+//     // Keyboard
 //     if (keys['Numpad7']) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), -rotSpeed));
 //     if (keys['Numpad9']) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), rotSpeed));
 //     if (keys['Numpad8']) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(1, 0, 0), rotSpeed));
@@ -168,15 +197,12 @@
 //     if (keys['KeyR']) velocity.add(up.clone().multiplyScalar(acceleration));
 //     if (keys['KeyF']) velocity.add(up.clone().multiplyScalar(-acceleration));
 
-//     // --- Gamepad controls ---
+//     // Gamepad
 //     if (gamepadIndex !== null) {
 //       const gp = navigator.getGamepads()[gamepadIndex];
 //       if (gp) {
-//         const lx = gp.axes[2]; // roll
-//         const ly = gp.axes[1]; // accel/decel
-//         const rx = gp.axes[0]; // yaw
-//         const ry = gp.axes[3]; // pitch
-
+//         const lx = gp.axes[2], ly = gp.axes[1];
+//         const rx = gp.axes[0], ry = gp.axes[3];
 //         if (Math.abs(rx) > 0.1) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), rx * rotSpeed));
 //         if (Math.abs(ry) > 0.1) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -ry * rotSpeed));
 //         if (Math.abs(lx) > 0.1) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 0, 1), -lx * rotSpeed));
@@ -184,10 +210,23 @@
 //       }
 //     }
 
+//     // Mobile
+//     if (isMobile) {
+//       const pitch = THREE.MathUtils.degToRad(mobileRotation.pitch - 45); // forward-back tilt
+//       const yaw = THREE.MathUtils.degToRad(mobileRotation.roll);         // left-right tilt
+//       const roll = THREE.MathUtils.degToRad(mobileRotation.yaw - 180);   // compass direction
+
+//       if (Math.abs(pitch) > 0.05) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -pitch * 0.05));
+//       if (Math.abs(yaw) > 0.05) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw * 0.05));
+//       if (Math.abs(roll) > 0.05) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 0, 1), roll * 0.001));
+
+//       if (accelPressed) velocity.add(forward.clone().multiplyScalar(acceleration));
+//       if (decelPressed) velocity.add(forward.clone().multiplyScalar(-acceleration));
+//     }
+
 //     velocity.multiplyScalar(friction);
 //     ship.position.add(velocity);
 
-//     // Slab collision
 //     for (let i = slabs.length - 1; i >= 0; i--) {
 //       const slab = slabs[i];
 //       if (slab.position.distanceTo(ship.position) < boxSize / 2) {
@@ -197,7 +236,6 @@
 //       }
 //     }
 
-//     // Update explosions
 //     for (let i = explosions.length - 1; i >= 0; i--) {
 //       const e = explosions[i];
 //       e.scale.multiplyScalar(1.05);
@@ -222,7 +260,6 @@
 
 // };
 
-
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.156.1/build/three.module.js';
 
 window.onload = () => {
@@ -243,7 +280,6 @@ window.onload = () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(window.devicePixelRatio);
 
-  // Brick layers
   const boxSize = 8;
   const boxThick = 2;
   const layerGap = 18;
@@ -293,7 +329,6 @@ window.onload = () => {
   const ambient = new THREE.AmbientLight(0xffffff, 2); 
   scene.add(ambient);
 
-  // Ship
   const shipGeometry = new THREE.ConeGeometry(0.5, 1, 8);
   shipGeometry.rotateX(Math.PI);
   const shipMaterial = new THREE.MeshStandardMaterial({ color: 0x990033 });
@@ -306,7 +341,6 @@ window.onload = () => {
 
   scene.add(ship);
 
-  // Sky dome stars
   const starGeo = new THREE.SphereGeometry(1500, 64, 64);
   const starMat = new THREE.MeshBasicMaterial({
     side: THREE.BackSide,
@@ -333,7 +367,6 @@ window.onload = () => {
     return canvas;
   }
 
-  // Input
   const keys = {};
   window.addEventListener('keydown', e => keys[e.code] = true);
   window.addEventListener('keyup', e => keys[e.code] = false);
@@ -341,14 +374,12 @@ window.onload = () => {
   let gamepadIndex = null;
   window.addEventListener('gamepadconnected', e => gamepadIndex = e.gamepad.index);
 
-  // --- Mobile detection & accelerometer ---
   const isMobile = /Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
   let accelPressed = false;
   let decelPressed = false;
   let mobileRotation = { pitch: 0, yaw: 0, roll: 0 };
 
   if (isMobile) {
-    // Buttons
     const accelBtn = document.createElement('button');
     accelBtn.textContent = 'ACCEL';
     Object.assign(accelBtn.style, {
@@ -369,17 +400,15 @@ window.onload = () => {
     decelBtn.ontouchstart = () => decelPressed = true;
     decelBtn.ontouchend = () => decelPressed = false;
 
-    // Accelerometer
     if (window.DeviceOrientationEvent) {
       window.addEventListener('deviceorientation', (e) => {
-        mobileRotation.roll = e.gamma || 0;
-        mobileRotation.pitch = e.beta || 0;
-        mobileRotation.yaw = e.alpha || 0;
+        mobileRotation.roll = e.alpha || 0;
+        mobileRotation.pitch = e.gamma || 0;
+        mobileRotation.yaw = e.beta || 0;
       });
     }
   }
 
-  // Physics
   const velocity = new THREE.Vector3();
   const acceleration = 0.006;
   const friction = 0.98;
@@ -406,7 +435,6 @@ window.onload = () => {
     requestAnimationFrame(animate);
     const q = new THREE.Quaternion();
 
-    // Keyboard
     if (keys['Numpad7']) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), -rotSpeed));
     if (keys['Numpad9']) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), rotSpeed));
     if (keys['Numpad8']) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(1, 0, 0), rotSpeed));
@@ -421,7 +449,6 @@ window.onload = () => {
     if (keys['KeyR']) velocity.add(up.clone().multiplyScalar(acceleration));
     if (keys['KeyF']) velocity.add(up.clone().multiplyScalar(-acceleration));
 
-    // Gamepad
     if (gamepadIndex !== null) {
       const gp = navigator.getGamepads()[gamepadIndex];
       if (gp) {
@@ -434,15 +461,14 @@ window.onload = () => {
       }
     }
 
-    // Mobile
     if (isMobile) {
-      const pitch = THREE.MathUtils.degToRad(mobileRotation.pitch - 45); // forward-back tilt
-      const yaw = THREE.MathUtils.degToRad(mobileRotation.roll);         // left-right tilt
-      const roll = THREE.MathUtils.degToRad(mobileRotation.yaw - 180);   // compass direction
+      const pitch = THREE.MathUtils.degToRad(mobileRotation.pitch);       // gamma
+      const yaw   = THREE.MathUtils.degToRad(mobileRotation.yaw - 45);   // beta - 45
+      const roll  = THREE.MathUtils.degToRad(mobileRotation.roll - 180); // alpha - 180
 
       if (Math.abs(pitch) > 0.05) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -pitch * 0.05));
-      if (Math.abs(yaw) > 0.05) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw * 0.05));
-      if (Math.abs(roll) > 0.05) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 0, 1), roll * 0.001));
+      if (Math.abs(yaw) > 0.05)   ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw * 0.05));
+      if (Math.abs(roll) > 0.05)  ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 0, 1), roll * 0.001));
 
       if (accelPressed) velocity.add(forward.clone().multiplyScalar(acceleration));
       if (decelPressed) velocity.add(forward.clone().multiplyScalar(-acceleration));
