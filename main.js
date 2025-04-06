@@ -437,10 +437,13 @@ window.onload = () => {
     requestAnimationFrame(animate);
     const q = new THREE.Quaternion();
 
+    //alpha
     if (keys['Numpad7']) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), -rotSpeed));
     if (keys['Numpad9']) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), rotSpeed));
+    //gamma
     if (keys['Numpad8']) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(1, 0, 0), rotSpeed));
     if (keys['Numpad2']) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -rotSpeed));
+    //beta
     if (keys['Numpad4']) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 0, 1), rotSpeed));
     if (keys['Numpad6']) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 0, 1), -rotSpeed));
 
@@ -464,16 +467,16 @@ window.onload = () => {
     }
 
     if (isMobile) {
-      const pitch = THREE.MathUtils.degToRad(mobileRotation.gamma);        // left-right tilt
-      const yaw   = THREE.MathUtils.degToRad(mobileRotation.beta - 45);   // forward tilt
-      const roll  = THREE.MathUtils.degToRad(mobileRotation.alpha - 180); // compass twist
+      const gamma = THREE.MathUtils.degToRad(mobileRotation.gamma + 50);        // left-right tilt
+      const beta   = THREE.MathUtils.degToRad(mobileRotation.beta );   // forward tilt
+      const alpha  = THREE.MathUtils.degToRad(mobileRotation.alpha ); // compass twist
 
-      if (Math.abs(pitch) > 0.05) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -pitch * 0.05));
-      if (Math.abs(yaw) > 0.05)   ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw * 0.05));
-      if (Math.abs(roll) > 0.05)  ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 0, 1), roll * 0.001));
+      if (Math.abs(gamma) > 0.05) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -gamma * 0.05));
+      if (Math.abs(alpha) > 0.05)   ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), alpha * 0.05));
+      if (Math.abs(beta) > 0.05)  ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 0, 1), beta * 0.001));
 
-      if (accelPressed) velocity.add(forward.clone().multiplyScalar(acceleration));
-      if (decelPressed) velocity.add(forward.clone().multiplyScalar(-acceleration));
+      if (accelPressed) velocity.add(up.clone().multiplyScalar(acceleration));
+      if (decelPressed) velocity.add(up.clone().multiplyScalar(-acceleration));
     }
 
     velocity.multiplyScalar(friction);
