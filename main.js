@@ -1,4 +1,4 @@
-//v1 34
+//v1 39
 // import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.156.1/build/three.module.js';
 
 // window.onload = () => {
@@ -377,24 +377,26 @@ window.onload = () => {
   const isMobile = /Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
   let accelPressed = false;
   let decelPressed = false;
-  let mobileRotation = { pitch: 0, yaw: 0, roll: 0 };
+  let mobileRotation = { alpha: 0, beta: 0, gamma: 0 };
 
   if (isMobile) {
-    const accelBtn = document.createElement('button');
-    accelBtn.textContent = 'ACCEL';
+    const accelBtn = document.createElement('div');
     Object.assign(accelBtn.style, {
       position: 'absolute', bottom: '20px', left: '20px',
-      fontSize: '18px', padding: '10px'
+      width: '60px', height: '60px',
+      borderRadius: '50%', border: '3px solid white',
+      background: 'transparent'
     });
     document.body.appendChild(accelBtn);
     accelBtn.ontouchstart = () => accelPressed = true;
     accelBtn.ontouchend = () => accelPressed = false;
 
-    const decelBtn = document.createElement('button');
-    decelBtn.textContent = 'DECEL';
+    const decelBtn = document.createElement('div');
     Object.assign(decelBtn.style, {
       position: 'absolute', bottom: '20px', right: '20px',
-      fontSize: '18px', padding: '10px'
+      width: '60px', height: '60px',
+      borderRadius: '50%', border: '3px solid white',
+      background: 'transparent'
     });
     document.body.appendChild(decelBtn);
     decelBtn.ontouchstart = () => decelPressed = true;
@@ -402,9 +404,9 @@ window.onload = () => {
 
     if (window.DeviceOrientationEvent) {
       window.addEventListener('deviceorientation', (e) => {
-        mobileRotation.roll = e.alpha || 0;
-        mobileRotation.pitch = e.gamma || 0;
-        mobileRotation.yaw = e.beta || 0;
+        mobileRotation.alpha = e.alpha || 0;
+        mobileRotation.beta = e.beta || 0;
+        mobileRotation.gamma = e.gamma || 0;
       });
     }
   }
@@ -462,9 +464,9 @@ window.onload = () => {
     }
 
     if (isMobile) {
-      const pitch = THREE.MathUtils.degToRad(mobileRotation.pitch);       // gamma
-      const yaw   = THREE.MathUtils.degToRad(mobileRotation.yaw - 45);   // beta - 45
-      const roll  = THREE.MathUtils.degToRad(mobileRotation.roll - 180); // alpha - 180
+      const pitch = THREE.MathUtils.degToRad(mobileRotation.gamma);        // left-right tilt
+      const yaw   = THREE.MathUtils.degToRad(mobileRotation.beta - 45);   // forward tilt
+      const roll  = THREE.MathUtils.degToRad(mobileRotation.alpha - 180); // compass twist
 
       if (Math.abs(pitch) > 0.05) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -pitch * 0.05));
       if (Math.abs(yaw) > 0.05)   ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw * 0.05));
