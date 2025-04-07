@@ -74,7 +74,7 @@ window.onload = () => {
   const ship = new THREE.Mesh(shipGeometry, shipMaterial);
   ship.position.set(0, 10, 5);
 
-  camera.position.set(0, -12, 5);
+  camera.position.set(0, -12, 0);
   camera.rotation.x = Math.PI / 2.5;
   ship.add(camera);
 
