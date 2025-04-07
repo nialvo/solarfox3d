@@ -137,7 +137,7 @@ window.onload = () => {
 
     const decelBtn = document.createElement('div');
     Object.assign(decelBtn.style, {
-      position: 'absolute', bottom: '20px', right: '20px',
+      position: 'absolute', bottom: '20px', left: '100px',
       width: '60px', height: '60px',
       borderRadius: '50%', border: '3px solid white',
       background: 'transparent'
@@ -148,9 +148,9 @@ window.onload = () => {
 
     const recalBtn = document.createElement('div');
     Object.assign(recalBtn.style, {
-      position: 'absolute', bottom: '20px', right: '20px',
+      position: 'absolute', bottom: '20px', left: '180px',
       width: '60px', height: '60px',
-      borderRadius: '50%', border: '3px solid white',
+      borderRadius: '50%', border: '2px dashed white',
       background: 'transparent'
     });
     document.body.appendChild(recalBtn);
@@ -231,7 +231,7 @@ window.onload = () => {
     if (isMobile) {
       const gamma = THREE.MathUtils.degToRad(mobileRotation.gamma + 50);        // left-right tilt
       const beta   = THREE.MathUtils.degToRad(mobileRotation.beta );   // forward tilt
-      const alpha  = THREE.MathUtils.degToRad(mobileRotation.alpha - calibration.alpha -180); // compass twist
+      const alpha  = THREE.MathUtils.degToRad(((mobileRotation.alpha + 360 - calibration.alpha) % 306) -180); // compass twist
 
       //if (Math.abs(gamma) > 0.05) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -gamma * 0.05));
       if (Math.abs(alpha) > 0.05)   ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), alpha * 0.05));
