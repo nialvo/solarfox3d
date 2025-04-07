@@ -74,7 +74,7 @@ window.onload = () => {
   const ship = new THREE.Mesh(shipGeometry, shipMaterial);
   ship.position.set(0, 10, 0);
 
-  camera.position.set(0, -12, 0);
+  camera.position.set(0, -12, 5);
   camera.rotation.x = Math.PI / 2.5;
   ship.add(camera);
 
@@ -237,7 +237,7 @@ window.onload = () => {
       const beta   = THREE.MathUtils.degToRad(mobileRotation.beta );  
       const alpha  = THREE.MathUtils.degToRad(alp);
 
-      if (Math.abs(gamma) > 0.05) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -gamma * 0.05));
+      if (Math.abs(gamma) > 0.05) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 0, 1), -gamma * 0.05));
       if (Math.abs(alpha) > 0.05)   ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), -alpha * 0.05));
       //if (Math.abs(beta) > 0.05)  ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 0, 1), beta * 0.001));
 
