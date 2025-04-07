@@ -380,7 +380,11 @@ window.onload = () => {
   let mobileRotation = { alpha: 0, beta: 0, gamma: 0 };
 
   if (isMobile) {
+
+
     const accelBtn = document.createElement('div');
+    let lastOrientation = null;
+
     Object.assign(accelBtn.style, {
       position: 'absolute', bottom: '20px', left: '20px',
       width: '60px', height: '60px',
@@ -402,8 +406,26 @@ window.onload = () => {
     decelBtn.ontouchstart = () => decelPressed = true;
     decelBtn.ontouchend = () => decelPressed = false;
 
+    const recalBtn = document.createElement('div');
+    Object.assign(recalBtn.style, {
+      position: 'absolute', bottom: '20px', right: '20px',
+      width: '60px', height: '60px',
+      borderRadius: '50%', border: '3px solid white',
+      background: 'transparent'
+    });
+    document.body.appendChild(recalBtn);
+    recalBtn.addEventListener("click", () => {
+      if (lastOrientation) {
+        calibration.alpha = lastOrientation.alpha || 0;
+        calibration.beta = lastOrientation.beta || 0;
+        calibration.gamma = lastOrientation.gamma || 0;
+      }
+    });
+
     if (window.DeviceOrientationEvent) {
       window.addEventListener('deviceorientation', (e) => {
+        lastOrientation = e;
+        
         mobileRotation.alpha = e.alpha || 0;
         mobileRotation.beta = e.beta || 0;
         mobileRotation.gamma = e.gamma || 0;
@@ -469,7 +491,7 @@ window.onload = () => {
     if (isMobile) {
       const gamma = THREE.MathUtils.degToRad(mobileRotation.gamma + 50);        // left-right tilt
       const beta   = THREE.MathUtils.degToRad(mobileRotation.beta );   // forward tilt
-      const alpha  = THREE.MathUtils.degToRad(mobileRotation.alpha -180); // compass twist
+      const alpha  = THREE.MathUtils.degToRad(mobileRotation.alpha - calibration.alpha -180); // compass twist
 
       //if (Math.abs(gamma) > 0.05) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -gamma * 0.05));
       if (Math.abs(alpha) > 0.05)   ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), alpha * 0.05));
