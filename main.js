@@ -233,12 +233,12 @@ window.onload = () => {
       if (alp < -180) alp += 360;
       else if (alp > 180) alp -= 360;
 
-      const gamma = THREE.MathUtils.degToRad(mobileRotation.gamma + 50);        // left-right tilt
+      const gamma = THREE.MathUtils.degToRad(mobileRotation.gamma - calibration.gamma);        // left-right tilt
       const beta   = THREE.MathUtils.degToRad(mobileRotation.beta );   // forward tilt
       const alpha  = THREE.MathUtils.degToRad(alp);
 
-      //if (Math.abs(gamma) > 0.05) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -gamma * 0.05));
-      if (Math.abs(alpha) > 0.05)   ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), alpha * 0.05));
+      if (Math.abs(gamma) > 0.05) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -gamma * 0.05));
+      if (Math.abs(alpha) > 0.05)   ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), -alpha * 0.05));
       //if (Math.abs(beta) > 0.05)  ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 0, 1), beta * 0.001));
 
       if (accelPressed) velocity.add(up.clone().multiplyScalar(acceleration));
