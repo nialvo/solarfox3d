@@ -72,7 +72,7 @@ window.onload = () => {
   shipGeometry.rotateX(Math.PI);
   const shipMaterial = new THREE.MeshStandardMaterial({ color: 0x990033 });
   const ship = new THREE.Mesh(shipGeometry, shipMaterial);
-  ship.position.set(0, 10, 5);
+  ship.position.set(0, 10, 0);
 
   camera.position.set(0, -12, 0);
   camera.rotation.x = Math.PI / 2.5;
