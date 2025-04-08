@@ -68,17 +68,21 @@ window.onload = () => {
   const ambient = new THREE.AmbientLight(0xffffff, 2); 
   scene.add(ambient);
 
-  const shipGeometry = new THREE.ConeGeometry(0.5, 1, 8);
+  const shipGeometry = new THREE.ConeGeometry(0.5, 5, 16);
   shipGeometry.rotateX(Math.PI);
   const shipMaterial = new THREE.MeshStandardMaterial({ color: 0x990033 });
   const ship = new THREE.Mesh(shipGeometry, shipMaterial);
-  ship.position.set(0, 10, 0);
+  ship.position.set(-200, 400, 410);
 
   camera.position.set(0, -12, 0);
-  camera.rotation.x = Math.PI / 2.5;
+  // camera.rotation.x = Math.PI / 2.5;
+  camera.lookAt(0, 0, 0);
   ship.add(camera);
 
   scene.add(ship);
+  const kk = new THREE.Quaternion();
+  ship.quaternion.multiply(kk.setFromAxisAngle(new THREE.Vector3(1, 0, 0), 4.25));
+  ship.quaternion.multiply(kk.setFromAxisAngle(new THREE.Vector3(0, 0, 1), -.75));
 
   const starGeo = new THREE.SphereGeometry(1500, 64, 64);
   const starMat = new THREE.MeshBasicMaterial({
@@ -198,7 +202,6 @@ window.onload = () => {
   function animate() {
     requestAnimationFrame(animate);
     const q = new THREE.Quaternion();
-
     //alpha
     if (keys['Numpad7']) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), -rotSpeed));
     if (keys['Numpad9']) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), rotSpeed));
