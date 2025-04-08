@@ -240,9 +240,9 @@ window.onload = () => {
       const beta   = THREE.MathUtils.degToRad(mobileRotation.beta- calibration.beta);  
       const alpha  = THREE.MathUtils.degToRad(alp);
 
-      if (Math.abs(gamma) > 0.05) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 0, 1), gamma * 0.05));
-      if (Math.abs(alpha) > 0.05)   ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), -alpha * 0.05));
-      if (Math.abs(beta) > 0.05)  ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(1, 0, 0), beta * 0.05));
+      if (Math.abs(gamma) > 0.01) ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 0, 1), gamma * 0.05));
+      if (Math.abs(alpha) > 0.01)   ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), -alpha * 0.01));
+      if (Math.abs(beta) > 0.01)  ship.quaternion.multiply(q.setFromAxisAngle(new THREE.Vector3(1, 0, 0), beta * 0.05));
 
       if (accelPressed) velocity.add(up.clone().multiplyScalar(acceleration));
       if (decelPressed) velocity.add(up.clone().multiplyScalar(-acceleration));
