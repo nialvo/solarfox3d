@@ -178,7 +178,7 @@ window.onload = () => {
   }
 
   const velocity = new THREE.Vector3();
-  const acceleration = 0.006;
+  let acceleration = 0.006;
   const friction = 0.98;
   const rotSpeed = 0.01;
   const explosions = [];
@@ -254,6 +254,7 @@ window.onload = () => {
     for (let i = slabs.length - 1; i >= 0; i--) {
       const slab = slabs[i];
       if (slab.position.distanceTo(ship.position) < boxSize / 2) {
+        acceleration += .001
         createExplosion(slab.position);
         scene.remove(slab);
         slabs.splice(i, 1);
